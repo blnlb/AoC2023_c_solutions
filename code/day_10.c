@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-#define DEBUG 1
+#define DEBUG 0
 int32_t MAX(int32_t a, int32_t b) { return((a) > (b) ? a : b); }
 int32_t MIN(int32_t a, int32_t b) { return((a) > (b) ? b : a); }
 
@@ -25,6 +25,11 @@ struct tile {
     
     int intersections;
 };
+
+void destroyTile(struct tile* t) {
+    free(t->directions);
+    free(t);
+}
 
 struct tile* createTile(char c) {
     struct tile* result = calloc(1, sizeof(struct tile));
@@ -164,7 +169,7 @@ int part2(struct tile** map, int len) {
 
 
 int main(int argc, char** argv) {
-    FILE *fp = fopen("day_10.txt", "r");
+    FILE *fp = fopen("test.txt", "r");
     size_t len = 150;
     size_t len_dummy;
     char *buff = malloc(len);
@@ -195,6 +200,7 @@ int main(int argc, char** argv) {
             if (p == NULL) exit(-1);
             map = p;
             p = NULL;
+            free(p);
             for (int i = len; i < len*len; ++i) {
                 map[i] = calloc(1, sizeof(struct tile));
             }
@@ -205,6 +211,7 @@ int main(int argc, char** argv) {
     struct tile **p = realloc(map, sizeof(struct tile*)*len*row);
     if (p == NULL) exit(-1);
     map = p;
+    p = NULL;
 
     getStartDir(map, startind, len);
 
@@ -229,6 +236,12 @@ int main(int argc, char** argv) {
     printf("Part 1: %d\n", bfs(map, startind + newDir[1], startind, len, 1));
     printf("Part 2: %d\n", part2(map, len));
 
-
+    fclose(fp);
+    free(buff);
+    free(p);
+    for (int i = 0; i < len; ++i) {
+        destroyTile(map[i]);
+    }
+    free(map);
     return 0;
 }
