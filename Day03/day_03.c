@@ -11,7 +11,7 @@ int symAdjacent(int row, int col, int colLength, int rowMax, int colMax, char** 
 
 int main(int argc, char **argv) {
     //replace test file with your input
-    char *file = "/Users/bworley/Documents/SHELL/AoC2023_c_solutions/data/day_03.txt";
+    char *file = "day_03.txt";
     char **symbolMap = getSymbols(file);
     int **numMap = getNumPositions(file);
     printf("Part 1: %d\n", checkNums(file, symbolMap));

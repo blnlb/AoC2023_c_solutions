@@ -239,7 +239,7 @@ int part1(char *file) {
 
 
 int main(int argc, char **argv) {
-    char *file = "/Users/bworley/Documents/SHELL/AoC2023_c_solutions/data/day_07.txt";
+    char *file = "day_07.txt";
     printf("Part 1: %d\n", part1(file));
     return 0;
 }

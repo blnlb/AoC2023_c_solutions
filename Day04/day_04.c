@@ -96,7 +96,7 @@ int part1(FILE *fp) {
 
 int main(int argc, char** argv) {
     //replace filename with your input
-    char *filename = "test.txt";
+    char *filename = "day_04.txt";
     FILE *fp = fopen(filename, "r");
         printf("Part 1: %d\n", part1(fp));
     

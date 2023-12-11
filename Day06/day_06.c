@@ -107,7 +107,7 @@ int part2(char *file) {
 }
 
 int main(int argc, char **argv) {
-    char *file = "test.txt";
+    char *file = "day_06.txt";
     printf("Part 1: %d\n", part1(file));
     printf("Part 2: %d\n", part2(file));
     return 0;

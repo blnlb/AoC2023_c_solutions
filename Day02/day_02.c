@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 }
 
 size_t part2() {
-    FILE *fp = fopen("test.txt", "r");
+    FILE *fp = fopen("day_02.txt", "r");
     size_t len = 512;
     char *buff = malloc(len);
 
@@ -72,7 +72,7 @@ size_t part2() {
 }
 
 size_t part1() {
-    FILE *fp = fopen("test.txt", "r");
+    FILE *fp = fopen("day_02.txt", "r");
     size_t len = 512;
     char *buff = malloc(len);
 

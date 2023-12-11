@@ -34,7 +34,7 @@ void mycompare(char* str, char* sub, int num, int* first, int* last) {
 }
 
 int part1() {
-    FILE *fp = fopen("/Users/bworley/Documents/SHELL/AoC2023_c_solutions/data/day_01.txt", "r");
+    FILE *fp = fopen("day_01.txt", "r");
     //2^7 covers the largest string size when reading line by line
     size_t len = 128;
     char *buff = malloc(len);
@@ -71,7 +71,7 @@ int part1() {
 }
 
 int part2() {
-    FILE *fp = fopen("/Users/bworley/Documents/SHELL/AoC2023_c_solutions/data/day_01.txt", "r");
+    FILE *fp = fopen("day_01.txt", "r");
     size_t len = 128;
     char *buff = malloc(len);
     

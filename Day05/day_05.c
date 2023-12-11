@@ -45,7 +45,7 @@ u_int32_t atouint(char* s) {
 }
 
 int main(int argc, char** argv) {
-    char *filename = "/Users/bworley/Documents/code/AoC2023_c_solutions/data/day_05.txt"; 
+    char *filename = "day_05.txt"; 
     FILE *fp = fopen(filename, "r");
     size_t len = 64;
     char *buff = malloc(65);
@@ -139,16 +139,7 @@ int main(int argc, char** argv) {
         }
     }   
 
-    // printf("Current seed placement: \n");
-    //     for (int i = 0; i < seedCount; ++i) {
-    //         curr = seeds[i];
-    //         printf("Seed %d: ", i);
-    //         while(curr != NULL) {
-    //             printf("%d\t", curr->val);
-    //             curr = curr->next;
-    //         }
-    //         printf("\n");
-    //     }
+
     u_int32_t lowest = UINT32_MAX;
     for (int i = 0; i < seedCount; ++i) {
         curr = seeds[i];
