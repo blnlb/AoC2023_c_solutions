@@ -34,7 +34,7 @@ int dist(int* a, int* b) {
 }
 
 int main(int argc, char** argv) {
-    FILE *fp = fopen("day_11.txt", "r");
+    FILE *fp = fopen("test.txt", "r");
     size_t len = 200;
     size_t len_dummy = 200;
     char *buff = malloc(len);

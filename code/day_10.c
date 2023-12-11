@@ -21,9 +21,6 @@ struct tile {
     int mainLoop;
     int isStart;
     int* directions;
-    int lowestDistance;
-    
-    int intersections;
 };
 
 void destroyTile(struct tile* t) {
@@ -38,9 +35,7 @@ struct tile* createTile(char c) {
     #endif
     result->directions = calloc(2, sizeof(int)); // 0'd out.
     result->isStart = 0;
-    result->lowestDistance = 2147483647;
     result->mainLoop = 0;
-    result->intersections = 0;
     if (c == '.') {
         return result;
     }
@@ -72,7 +67,6 @@ struct tile* createTile(char c) {
         case 'S':
         default:
             result->mainLoop = 1;
-            result->lowestDistance = 0;
             result->isStart = 1;
     }
     return result;
@@ -91,39 +85,23 @@ void getStartDir(struct tile **map, int ind, int len) {
         map[ind]->directions[num++] = right;
 }
 
-#if DEBUG
-void printMap(struct tile** map, int len, int dim2) {
-    for (int i = 0; i < dim2; ++i) {
-        for (int j = 0; j < len; ++j) {
-            printf("%c", map[i*len + j]->letter);
-        }
-        printf("\n");
+int walkTheLoop(struct tile** map, int ind, int oldind, int len, int steps) {
+    if (map[ind]->isStart) {
+        return steps;
     }
-}
-#endif
-
-//uggghhhhhh
-int bfs(struct tile** map, int ind, int oldind, int len, int steps) {
     int newDir;
     map[ind]->mainLoop = 1;
-    map[ind]->lowestDistance = MIN(map[ind]->lowestDistance, steps);
     if (oldind != ind - 1 && 
         (map[ind]->directions[0] == left || map[ind]->directions[1] == left))
-            newDir = -1;
+            return walkTheLoop(map, ind - 1, ind, len, steps + 1);
     else if (oldind != ind + 1 &&
         (map[ind]->directions[0] == right || map[ind]->directions[1] == right))
-            newDir = 1;
+            return walkTheLoop(map, ind + 1, ind, len, steps + 1);
     else if (oldind != ind - len &&
         (map[ind]->directions[0] == up || map[ind]->directions[1] == up))
-            newDir = -len;
-    else
-        newDir = len;
+            return walkTheLoop(map, ind - len, ind, len, steps + 1);
+    return walkTheLoop(map, ind + len, ind, len, steps + 1);
 
-    if (map[ind]->lowestDistance >= map[ind + newDir]->lowestDistance) {
-        return map[ind]->lowestDistance;
-    }
-    
-    return bfs(map, ind + newDir, ind, len, steps + 1);
 }
 
 //EVEN WORSE NOW
@@ -131,27 +109,27 @@ int part2(struct tile** map, int len) {
     struct tile *curr = NULL;
     int total = 0;
     int dirs;
-    int isUp, isDown;
+    int isUp, isDown, intersections;
     for (int i = 0; i < len; ++i) {
         for (int j = 0; j < len; ++j) {
-            isUp = 0; isDown = 0;
             if (map[i*len + j]->mainLoop) continue;
+            isUp = 0; isDown = 0; intersections = 0;
             for (int rt = j + 1; rt < len; ++rt) {
                 curr = map[i*len + rt];
                 if (curr->mainLoop) {
                     dirs = (curr->directions[0] | curr->directions[1]); 
                     if (dirs == (up|down))
-                        ++(map[i*len + j]->intersections);
+                        ++intersections;
                     else if (dirs & up) {
                         if (isDown) {
-                            ++(map[i*len + j]->intersections);
+                            ++intersections;
                         } else {
                             isUp = 1;
                         }
                     }
                     else if (dirs & down) {
                         if (isUp) {
-                            ++(map[i*len + j]->intersections);
+                            ++intersections;
                         } else {
                             isDown = 1;
                         }
@@ -159,9 +137,8 @@ int part2(struct tile** map, int len) {
 
                 }  
             }
-            if ((map[i*len + j]->intersections) % 2) {
-                ++total; continue;
-            }
+            if (intersections % 2)
+                ++total; 
         }
     }
     return total;
@@ -169,7 +146,7 @@ int part2(struct tile** map, int len) {
 
 
 int main(int argc, char** argv) {
-    FILE *fp = fopen("test.txt", "r");
+    FILE *fp = fopen("day_10.txt", "r");
     size_t len = 150;
     size_t len_dummy;
     char *buff = malloc(len);
@@ -213,29 +190,24 @@ int main(int argc, char** argv) {
     map = p;
     p = NULL;
 
+    // Gather the start directions.
     getStartDir(map, startind, len);
 
-    #if DEBUG
-        printMap(map, len, row);
-        printf("Start Position: (%lu, %d)\n", startind % len, (int)(startind / len));
-        printf("Start Directions: %d and %d\n", map[startind]->directions[0], map[startind]->directions[1]);
-    #endif
-
-    //bfs both directions.
-    int newDir[2]; int ct = 0;
+    // If the first two directions we check for aren't a relevant direction, then one of the others will work
+    int newDir;
     if (map[startind]->directions[0] == left || map[startind]->directions[1] == left)
-            newDir[ct++] = -1;
-    if (map[startind]->directions[0] == right || map[startind]->directions[1] == right)
-        newDir[ct++] = 1;
-    if (map[startind]->directions[0] == up || map[startind]->directions[1] == up)
-        newDir[ct++] = -len;
-    if (map[startind]->directions[0] == down || map[startind]->directions[1] == down)
-        newDir[ct++] = len;
+            newDir = -1;
+    else if (map[startind]->directions[0] == right || map[startind]->directions[1] == right)
+        newDir = 1;
+    else 
+        newDir = -len;
 
-    bfs(map, startind + newDir[0], startind, len, 1);
-    printf("Part 1: %d\n", bfs(map, startind + newDir[1], startind, len, 1));
+    // All we do is walk the loop and divide by two.
+    printf("Part 1: %d\n", (int)(walkTheLoop(map, startind + newDir, startind, len, 1)/2));
+    // Then we do odd-even crossings
     printf("Part 2: %d\n", part2(map, len));
 
+    // Free up everything.
     fclose(fp);
     free(buff);
     free(p);
